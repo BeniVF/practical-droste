@@ -13,9 +13,13 @@ object RoseF {
       fa.copy(forest = fa.forest.map(f))
   }
 
-  def fromNextCoalgebra[A, B]: Coalgebra[RoseF[B, ?], Next[A, B]] = ???
+  def depthAlgebra[A]: Algebra[RoseF[A, ?], Int] = ???
 
-  def fromNext[A, B, C](next: Next[A, B])(implicit C: Embed[RoseF[B, ?], C]): C = ???
+  def depth[A, B](b: B)(implicit B: Basis[RoseF[A, ?], B]): Int = ???
+
+  def fromNextCoalgebra[A, B]: Coalgebra[RoseF[A, ?], Next[B, A]] =  ???
+
+  def fromNext[A, B, C](next: Next[B, A])(implicit C: Embed[RoseF[A, ?], C]): C = ???
 }
 
 object Example {
@@ -32,4 +36,6 @@ object Example {
       ))
 
   def build(root: Int) = fromNext(next(root))
+
+  def depth(root: Int): Int = RoseF.depth(build(root))
 }
