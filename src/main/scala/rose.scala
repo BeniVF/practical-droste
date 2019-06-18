@@ -13,13 +13,22 @@ object RoseF {
       fa.copy(forest = fa.forest.map(f))
   }
 
-  def depthAlgebra[A]: Algebra[RoseF[A, ?], Int] = ???
+  def depthAlgebra[A]: Algebra[RoseF[A, ?], Int] = Algebra {
+    case RoseF(a, Nil)    => 1
+    case RoseF(a, forest) => 1 + forest.max
+  }
 
-  def depth[A, B](b: B)(implicit B: Basis[RoseF[A, ?], B]): Int = ???
+  def depth[A, B](b: B)(implicit B: Basis[RoseF[A, ?], B]): Int =
+    scheme.cata(depthAlgebra[A]).apply(b)
 
-  def fromNextCoalgebra[A, B]: Coalgebra[RoseF[A, ?], Next[B, A]] =  ???
+  def fromNextCoalgebra[A, B]: Coalgebra[RoseF[A, ?], Next[B, A]] = Coalgebra {
+    case (a, f) =>
+      val (b, as) = f(a)
+      RoseF(b, as.map(_ -> f))
+  }
 
-  def fromNext[A, B, C](next: Next[B, A])(implicit C: Embed[RoseF[A, ?], C]): C = ???
+  def fromNext[A, B, C](next: Next[B, A])(implicit C: Embed[RoseF[A, ?], C]): C =
+    scheme.ana(fromNextCoalgebra[A, B]).apply(next)
 }
 
 object Example {
