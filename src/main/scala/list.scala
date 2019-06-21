@@ -73,6 +73,6 @@ object Example {
   import ListF._
   import Fixed._
 
-  val result = ???
+  lazy val result = ???
 
 }
