@@ -51,7 +51,7 @@ object ListF {
   def same[A] = ???
 
   def reverseAlgebra[A]: Algebra[ListF[A, ?], List[A]] = ???
-  def factorialH[A]                                    = ???
+  def factorialH                                       = ???
 
   // Para: F[(R, A)] => A
   def slidingAlgebra[A](n: Int): RAlgebra[List[A], ListF[A, ?], List[List[A]]] = ???
