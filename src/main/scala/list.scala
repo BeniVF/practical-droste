@@ -91,6 +91,14 @@ object ListF {
     scheme.zoo.para(slidingAlgebra[A](n)).apply(xs)
 
   // Apo: A => F[Either[R, A]]
+  def mapHeadCoalgebra[A](f: A => A): RCoalgebra[List[A], ListF[A, ?], List[A]] = RCoalgebra {
+    case Nil     => NilF()
+    case x :: xs => ConsF(f(x), Left(xs))
+  }
+
+  def mapHead[A](f: A => A)(xs: List[A])(implicit B: Embed[ListF[A, ?], List[A]]): List[A] =
+    scheme.zoo.apo(mapHeadCoalgebra[A](f)).apply(xs)
+
   def insertElementCoalgebra[A: Order]: RCoalgebra[List[A], ListF[A, ?], List[A]] = RCoalgebra {
     case Nil                    => NilF()
     case x :: Nil               => ConsF(x, Left(Nil))
@@ -148,6 +156,7 @@ object Example {
   val sameResult             = same(List(1, 2, 3))
   val reverseFactorialResult = factorialH(10)
   val slideResult            = sliding(3)((1 to 5).toList)
+  val mapHeadResult          = mapHead[Int](x => x + 1)(List(1, 2, 3, 4))
   val sorted                 = sort(from)
   val oddPosition            = odds((1 to 10).toList)
   val evenPosition           = evens((1 to 10).toList)
