@@ -115,8 +115,18 @@ object ListF {
       case ConsF(h, _ :<(NilF()))           => List(h)
       case ConsF(h, _ :<(ConsF(_, t :< _))) => h :: t
     }
+
   def odds[A, B](b: B)(implicit B: Basis[ListF[A, ?], B]): List[A] =
     scheme.zoo.histo(oddsAlgebra[A]).apply(b)
+
+  def evensAlgebra[A]: CVAlgebra[ListF[A, ?], List[A]] = CVAlgebra {
+    case NilF()                           => Nil
+    case ConsF(_, _ :<(NilF()))           => Nil
+    case ConsF(_, _ :<(ConsF(h, t :< _))) => h :: t
+  }
+
+  def evens[A, B](b: B)(implicit B: Basis[ListF[A, ?], B]): List[A] =
+    scheme.zoo.histo(evensAlgebra[A]).apply(b)
 
 }
 
@@ -128,6 +138,19 @@ object Example {
 
   val listF1 = cons(1, wrap(2))
   val listF2 = cons(4, cons(3, cons(2, wrap(1))))
+  val to     = listF2
+  val from   = List(3, 1, 1, 2, 4, 3, 5, 1, 6, 2, 1)
+
+  val listResult             = toList(to)
+  val twoAlgebrasResult      = twoAlgebras[Int, Fix[ListF[Int, ?]]](to)
+  val factorialResult        = factorial(10)
+  val listFResult            = fromList[Int, Fix[ListF[Int, ?]]](from)
+  val sameResult             = same(List(1, 2, 3))
+  val reverseFactorialResult = factorialH(10)
+  val slideResult            = sliding(3)((1 to 5).toList)
+  val sorted                 = sort(from)
+  val oddPosition            = odds((1 to 10).toList)
+  val evenPosition           = evens((1 to 10).toList)
 
   lazy val result = odds(listF2)
 }
