@@ -39,6 +39,11 @@ object ListF {
   def toList[A, B](b: B)(implicit B: Basis[ListF[A, ?], B]): List[A] =
     scheme.cata(toListAlgebra[A]).apply(b)
 
+  def lengthAlgebra[A]: Algebra[ListF[A, ?], Int] = Algebra {
+    case NilF()           => 0
+    case ConsF(_, length) => 1 + length
+  }
+
   def showAlgebra[A: Show]: Algebra[ListF[A, ?], String] = Algebra {
     case NilF()            => "."
     case ConsF(head, tail) => s"${head.show} :: $tail"
@@ -82,7 +87,9 @@ object ListF {
 
   // Hylo = Cata + Ana
 
-  def same[A] = scheme.hylo(toListAlgebra[A], fromListCoalgebra[A])
+  def same[A]               = scheme.hylo(toListAlgebra[A], fromListCoalgebra[A])
+  def length[A]             = scheme.hylo(lengthAlgebra[A], fromListCoalgebra[A])
+  def combineAll[A: Monoid] = scheme.hylo(monoidAlgebra[A], fromListCoalgebra[A])
 
   def reverseAlgebra[A]: Algebra[ListF[A, ?], List[A]] = Algebra {
     case NilF()            => Nil
@@ -171,6 +178,8 @@ object Example {
   val fillResult             = fill(3, times = 10)
   val listFResult            = fromList[Int, Fix[ListF[Int, ?]]](from)
   val sameResult             = same(List(1, 2, 3))
+  val lengthResult           = length(List(1, 2, 3, 4, 5))
+  val combineAllResult       = combineAll[Int].apply((1 to 1000).toList)
   val reverseFactorialResult = factorialH(10)
   val tailResult             = tail(List(1, 2, 3, 4))
   val slideResult            = sliding(3)((1 to 5).toList)
