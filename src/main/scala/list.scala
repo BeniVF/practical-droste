@@ -72,6 +72,14 @@ object ListF {
   def factorial[B](n: Int)(implicit B: Embed[ListF[Int, ?], B]): B =
     scheme.ana(factorialCoalgebra).apply(n)
 
+  def repeatCoalgebra(x: Int): Coalgebra[ListF[Int, ?], Int] = Coalgebra {
+    case 0 => NilF()
+    case n => ConsF(x, n - 1)
+  }
+
+  def fill[B](n: Int, times: Int)(implicit B: Embed[ListF[Int, ?], B]): B =
+    scheme.ana(repeatCoalgebra(n)).apply(times)
+
   // Hylo = Cata + Ana
 
   def same[A] = scheme.hylo(toListAlgebra[A], fromListCoalgebra[A])
@@ -160,6 +168,7 @@ object Example {
   val listResult             = toList(to)
   val twoAlgebrasResult      = twoAlgebras[Int, Fix[ListF[Int, ?]]](to)
   val factorialResult        = factorial(10)
+  val fillResult             = fill(3, times = 10)
   val listFResult            = fromList[Int, Fix[ListF[Int, ?]]](from)
   val sameResult             = same(List(1, 2, 3))
   val reverseFactorialResult = factorialH(10)
