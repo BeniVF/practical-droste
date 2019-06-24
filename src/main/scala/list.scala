@@ -83,6 +83,14 @@ object ListF {
   def factorialH = scheme.hylo(reverseAlgebra[Int], factorialCoalgebra)
 
   // Para: F[(R, A)] => A
+  def tailAlgebra[A]: RAlgebra[List[A], ListF[A, ?], List[A]] = RAlgebra {
+    case NilF()            => Nil
+    case ConsF(_, (xs, _)) => xs
+  }
+
+  def tail[A](xs: List[A])(implicit B: Project[ListF[A, ?], List[A]]): List[A] =
+    scheme.zoo.para(tailAlgebra[A]).apply(xs)
+
   def slidingAlgebra[A](n: Int): RAlgebra[List[A], ListF[A, ?], List[List[A]]] = RAlgebra {
     case NilF()            => Nil
     case ConsF(x, (xs, r)) => (x :: xs).take(n) :: r
@@ -155,6 +163,7 @@ object Example {
   val listFResult            = fromList[Int, Fix[ListF[Int, ?]]](from)
   val sameResult             = same(List(1, 2, 3))
   val reverseFactorialResult = factorialH(10)
+  val tailResult             = tail(List(1, 2, 3, 4))
   val slideResult            = sliding(3)((1 to 5).toList)
   val mapHeadResult          = mapHead[Int](x => x + 1)(List(1, 2, 3, 4))
   val sorted                 = sort(from)
